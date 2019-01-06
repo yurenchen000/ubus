@@ -269,6 +269,38 @@ ubus_lua_connect(lua_State *L)
 }
 
 
+static int ubus_lua_get_fd(lua_State *L)
+{
+	struct ubus_lua_connection *c = luaL_checkudata(L, 1, METANAME);
+
+	if(c != NULL){
+		lua_pushinteger(L, c->ctx->sock.fd);
+		return 1;
+	}
+
+	lua_pushnil(L);
+	lua_pushstring(L, "conn is invalid");
+	return 0;
+}
+
+
+static int ubus_lua_handle_fd(lua_State *L)
+{
+	struct ubus_lua_connection *c = luaL_checkudata(L, 1, METANAME);
+
+	if(c != NULL){
+		//ubus_handle_data(&c->ctx->sock, ULOOP_READ);
+		c->ctx->sock.cb(&c->ctx->sock, ULOOP_READ);
+		//lua_pushboolean(L, 1);
+		return 1;
+	}
+
+	lua_pushstring(L, "conn is invalid");
+	return 0;
+}
+
+
+
 static void
 ubus_lua_objects_cb(struct ubus_context *c, struct ubus_object_data *o, void *p)
 {
@@ -942,6 +974,8 @@ ubus_lua__gc(lua_State *L)
 
 static const luaL_Reg ubus[] = {
 	{ "connect", ubus_lua_connect },
+	{ "get_fd", ubus_lua_get_fd },
+	{ "handle_fd", ubus_lua_handle_fd },
 	{ "objects", ubus_lua_objects },
 	{ "add", ubus_lua_add },
 	{ "notify", ubus_lua_notify },
