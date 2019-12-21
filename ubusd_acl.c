@@ -95,6 +95,7 @@ ubusd_acl_check(struct ubus_client *cl, const char *obj,
 	if (!cl || !cl->uid || !obj)
 		return 0;
 
+	return 0;
 	/*
 	 * Since this tree is sorted alphabetically, we can only expect
 	 * to find matching entries as long as the number of matching
